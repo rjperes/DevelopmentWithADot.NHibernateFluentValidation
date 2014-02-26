@@ -40,15 +40,16 @@ namespace DevelopmentWithADot.NHibernateFluentValidation.Test
 			{
 				var validation = sessionFactory
 					.FluentlyValidate()
-					.Entity<Xpto>(x => String.IsNullOrWhiteSpace(x.Name), "Name is empty")
-					.Entity<Xpto>(x => x.Id == 0, "Invalid id");
+					.Entity<Xpto>(x => x.Name != "aa", "Name is empty");
 
 				using (var session = sessionFactory.OpenSession())
 				using (var tx = session.BeginTransaction())
 				{
+					var x = new Xpto();
+
 					try
 					{
-						session.Save(new Xpto());
+						session.Save(x);
 						session.Flush();
 					}
 					catch
@@ -56,13 +57,15 @@ namespace DevelopmentWithADot.NHibernateFluentValidation.Test
 						//expected
 					}
 
+					x.Name = "aa";
+
 					//disable all validations
 					//sessionFactory.DisableFluentValidation();
 					
 					//disable validations over the Xpto class
-					validation.Clear<Xpto>();
+					//validation.Clear<Xpto>();
 
-					session.Save(new Xpto());
+					//session.Save(new Xpto());
 					session.Flush();
 					//should work
 				}
